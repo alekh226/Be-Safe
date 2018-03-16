@@ -1,0 +1,38 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/addUserFragement"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="200dp"
+    android:layout_marginLeft="75dp"
+    android:layout_marginRight="75dp"
+    android:layout_marginBottom="120dp"
+    android:background="@color/white"
+    android:padding="10dp"
+    tools:context="project226.a000webhostapp.com.feelsecure.AddUser">
+
+    <!-- TODO: Update blank fragment layout -->
+    <EditText
+        android:id="@+id/enterKey"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter Key" />
+
+    <Button
+        android:id="@+id/addNewKey"
+        android:textColor="#FFFF"
+        android:textSize="30sp"
+
+        android:layout_width="170dp"
+        android:layout_height="50dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#B3B3B3"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="14"
+        android:layout_marginTop="52dp"
+        android:onClick="addNewKeyClicked"
+        android:text="Add Key" />
+
+
+</FrameLayout>

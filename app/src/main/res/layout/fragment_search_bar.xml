@@ -1,0 +1,35 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="382dp"
+    android:id="@+id/search_bar"
+    android:layout_height="55dp"
+    android:background="@drawable/buttonshape_selectuser"
+    tools:context="project226.a000webhostapp.com.feelsecure.SearchBar">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <ImageView
+        android:id="@+id/search_icon"
+        android:layout_width="50dp"
+        android:layout_height="55dp"
+        android:src="@android:drawable/ic_menu_search" />
+    <EditText
+        android:layout_width="235dp"
+        android:layout_height="55dp"
+        android:textColor="@color/white"
+        android:id="@+id/search_text"
+        android:layout_marginLeft="55dp"
+        android:hint="your Address"
+        />
+
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="75dp"
+        android:layout_height="55dp"
+        android:layout_marginLeft="290dp"
+        android:layout_marginRight="10dp"
+        android:onClick="searchButtonClickedForCrime"
+        android:text="Search"
+        android:textSize="12dp"/>
+</FrameLayout>

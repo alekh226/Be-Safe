@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="project226.a000webhostapp.com.feelsecure.ForgetEmailActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f9e8d2"
+        android:layout_marginTop="40dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_marginTop="80dp"
+            android:layout_height="match_parent"
+            android:weightSum="1">
+            <TextView
+                android:text="Email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/email"
+                android:layout_weight="0.06"
+                android:textSize="19dp"
+                android:gravity="center_vertical" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:id="@+id/emailReset"
+                android:hint="Enter Email" />
+
+
+
+            <Button
+                android:text="SUBMIT"
+                android:layout_width="124dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/submitEmailResetF"
+                android:layout_gravity="center_horizontal" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:background="#DCDCDC"
+        android:layout_height="40dp"
+        android:layout_marginTop="0dp"
+        android:gravity="center_vertical|center_horizontal">
+
+        <TextView
+            android:text="Reset Password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="27dp"
+            android:textColor="#000000"
+            android:id="@+id/textView"
+            android:layout_gravity="center_vertical|center_horizontal" />
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
