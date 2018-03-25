@@ -1,5 +1,8 @@
 package project226.a000webhostapp.com.feelsecure;
 
+import android.*;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +24,8 @@ public class MapsActivity2 extends FragmentActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private LatLng otherslocation;
     private LatLng currentLocation;
+    private String place;
+    private String otherKey;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +39,10 @@ public class MapsActivity2 extends FragmentActivity implements OnMapReadyCallbac
         //Log.d("TTTTTT","k"+username);
        // otherslocation = new LatLng(getargs.getDouble("otherLat"),getargs.getDouble("otherLong"));
         currentLocation = new LatLng(getargs.getDouble("currentLat"),getargs.getDouble("currentLong"));
-        getOtherUserLocation(getargs.getString("otherKey"));
+        otherslocation = new LatLng(getargs.getDouble("otherLat"),getargs.getDouble("otherLong"));
+        place=getargs.getString("place");
+        otherKey=getargs.getString("otherKey");
+
 
     }
 
@@ -51,72 +59,85 @@ public class MapsActivity2 extends FragmentActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        getOtherUserLocation(otherKey);
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
     public void getOtherUserLocation(final String keyPassed){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+                mMap.clear();
                 String key1 = keyPassed;
-                // while (true){
-                final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference().child(key1);
-                // while (true){
-                myRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // This method is called once with the initial value and again
-                        // whenever data at this location is updated.
-//                String value = dataSnapshot.getValue().toString()
-                        Double latitude =Double.valueOf((Double) dataSnapshot.child("Latitude").getValue());
-                        Double longitude =Double.valueOf((Double) dataSnapshot.child("Longitude").getValue());
-                        String userName =String.valueOf( dataSnapshot.child("userName").getValue());
-                        Log.d("GetUsers", "Value is: "+userName + latitude+":::"+longitude);
-                        otherslocation = new LatLng(latitude,longitude);
-                        mMap.clear();
+                if (!key1.equals("X")) {
+                    // while (true){
+                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference().child(key1);
+                    // while (true){
+                    myRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            // This method is called once with the initial value and again
+                            // whenever data at this location is updated.
+                            //                String value = dataSnapshot.getValue().toString()
+                            Double latitude = Double.valueOf((Double) dataSnapshot.child("Latitude").getValue());
+                            Double longitude = Double.valueOf((Double) dataSnapshot.child("Longitude").getValue());
+                            String userName = String.valueOf(dataSnapshot.child("userName").getValue());
+                            Log.d("GetUsers", "Value is: " + userName + latitude + ":::" + longitude);
+                            otherslocation = new LatLng(latitude, longitude);
 
 
-                        ///////////////////////////////////////////////////////////////////////////////////
-                        Object dataTransfer[] = new Object[5];
-                        String url = getDirectionsUrl();
-                        GetDirectionsData getDirectionsData = new GetDirectionsData();
-                        dataTransfer[0] = mMap;
-                        dataTransfer[1] = url;
-                        dataTransfer[2] = new LatLng(otherslocation.latitude, otherslocation.longitude);
-                        dataTransfer[3] = userName;
-                        dataTransfer[4]= new LatLng(currentLocation.latitude,currentLocation.longitude);
-                        getDirectionsData.execute(dataTransfer);
-                        ///////////////////////////////////////////////////////////////////////////////////////
-                            /*if (marker != null)
-                                marker.remove();
-                            marker =addMarker(otherslocation,userName,distance[0]);
-                            Log.d("ReadBothLocation",""+currentLocation+"kkk:"+ otherslocation);*/
 
-                    }
-                    private String getDirectionsUrl()
-                    {
-                        StringBuilder googleDirectionsUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
-                        googleDirectionsUrl.append("origin="+currentLocation.latitude+","+currentLocation.longitude);
-                        googleDirectionsUrl.append("&destination="+otherslocation.latitude+","+otherslocation.longitude);
-                        googleDirectionsUrl.append("&key="+"AIzaSyBMlQHqPHOeQosA0Yuc9rrzk7wtwDCdUWk");
+                            ///////////////////////////////////////////////////////////////////////////////////
+                            Object dataTransfer[] = new Object[5];
+                            String url = getDirectionsUrl();
+                            GetDirectionsData getDirectionsData = new GetDirectionsData();
+                            dataTransfer[0] = mMap;
+                            dataTransfer[1] = url;
+                            dataTransfer[2] = new LatLng(otherslocation.latitude, otherslocation.longitude);
+                            dataTransfer[3] = userName;
+                            dataTransfer[4] = new LatLng(currentLocation.latitude, currentLocation.longitude);
+                            getDirectionsData.execute(dataTransfer);
+                            ///////////////////////////////////////////////////////////////////////////////////////
+                                /*if (marker != null)
+                                    marker.remove();
+                                marker =addMarker(otherslocation,userName,distance[0]);
+                                Log.d("ReadBothLocation",""+currentLocation+"kkk:"+ otherslocation);*/
 
-                        return googleDirectionsUrl.toString();
-                    }
+                        }
 
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                        // Failed to read value
-                        Log.w("tag", "Failed to read value.", error.toException());
-                    }
-                });
 
-            }
-        }).start();
 
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                            // Failed to read value
+                            Log.w("tag", "Failed to read value.", error.toException());
+                        }
+                    });
+                }else {
+                    //mMap.clear();
+                    Object dataTransfer[] = new Object[5];
+                    String url = getDirectionsUrl();
+                    GetDirectionsData getDirectionsData = new GetDirectionsData();
+                    dataTransfer[0] = mMap;
+                    dataTransfer[1] = url;
+                    dataTransfer[2] = new LatLng(otherslocation.latitude, otherslocation.longitude);
+                    dataTransfer[3] = place;
+                    dataTransfer[4] = new LatLng(currentLocation.latitude, currentLocation.longitude);
+                    getDirectionsData.execute(dataTransfer);
+                }
+
+
+    }
+    private String getDirectionsUrl() {
+        StringBuilder googleDirectionsUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
+        googleDirectionsUrl.append("origin=" + currentLocation.latitude + "," + currentLocation.longitude);
+        googleDirectionsUrl.append("&destination=" + otherslocation.latitude + "," + otherslocation.longitude);
+        googleDirectionsUrl.append("&key=" + "AIzaSyBMlQHqPHOeQosA0Yuc9rrzk7wtwDCdUWk");
+
+        return googleDirectionsUrl.toString();
     }
 }

@@ -2,12 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/addUserFragement"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginTop="200dp"
     android:layout_marginLeft="75dp"
     android:layout_marginRight="75dp"
     android:layout_marginBottom="120dp"
-    android:background="@color/white"
+
+    android:background="@drawable/fregment_design"
     android:padding="10dp"
     tools:context="project226.a000webhostapp.com.feelsecure.AddUser">
 
@@ -15,6 +16,7 @@
     <EditText
         android:id="@+id/enterKey"
         android:layout_width="150dp"
+        android:layout_marginLeft="15dp"
         android:layout_height="wrap_content"
         android:hint="Enter Key" />
 
@@ -22,7 +24,7 @@
         android:id="@+id/addNewKey"
         android:textColor="#FFFF"
         android:textSize="30sp"
-
+        android:layout_marginLeft="10dp"
         android:layout_width="170dp"
         android:layout_height="50dp"
         android:background="@drawable/buttonshape"

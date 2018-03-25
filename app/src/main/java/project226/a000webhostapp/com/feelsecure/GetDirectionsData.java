@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -80,10 +81,12 @@ public class GetDirectionsData extends AsyncTask {
     }
     public void displayMarker(LatLng latLng,LatLng currentLocation,String duration ,String distance,String userName){
         MarkerOptions markerOptions =new MarkerOptions();
+        //Log.d("MMMarker",latLng+":"+currentLocation+":"+distance+":"+duration+":"+userName);
         markerOptions.position(latLng);
         markerOptions.title(userName);
         markerOptions.snippet("Distance = "+distance+" Duration = "+ duration);
        // markerOptions.snippet("Duration = "+ duration);
+        //markerOptions .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_track));
         mMap.addMarker(markerOptions).showInfoWindow();
         CameraUpdate center=
                 CameraUpdateFactory.newLatLng(new LatLng(latLng.latitude,

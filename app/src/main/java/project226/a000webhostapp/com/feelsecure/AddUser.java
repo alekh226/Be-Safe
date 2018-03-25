@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,19 +27,24 @@ public class AddUser extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM3 = "param3";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
    public EditText enterUserKey;
     public TextView textView;
+    private Double latitude;
+    private Double longitude;
+    private LatLng latLng;
     public Button addUserButton;
 
-    public static AddUser newInstance(String param1, String param2) {
+    public static AddUser newInstance(String param1, Double param2,Double prams3) {
         AddUser fragment = new AddUser();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putDouble(ARG_PARAM2, param2);
+        args.putDouble(ARG_PARAM3, prams3);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,7 +56,8 @@ public class AddUser extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            latitude = getArguments().getDouble(ARG_PARAM2);
+            longitude=getArguments().getDouble(ARG_PARAM3);
         }
     }
 
@@ -73,7 +80,7 @@ public class AddUser extends Fragment {
                 final String key =enterUserKey.getText().toString();
                 //textView.setText(key);
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = myRef = database.getReference(mParam1);;
+                DatabaseReference myRef = myRef = database.getReference(mParam1);
                 //MyDBHandler myDBHandler = new MyDBHandler(getActivity().getApplicationContext(),null,null,1);
                 final String[] userName = new String[1];
                 myRef.child("accesList").push().setValue(key);
@@ -107,7 +114,7 @@ public class AddUser extends Fragment {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        UserList userList=new UserList();
+                        UserList userList=UserList.newInstance(latitude,longitude);
                         AddUser selectUser =new AddUser();
                         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

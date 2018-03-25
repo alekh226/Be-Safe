@@ -35,6 +35,7 @@ public class getLocationAddressAsync extends AsyncTask {
     @Override
     protected void onPostExecute(Object o) {
       //  super.onPostExecute(o);
+
         AsyncTask task =new searchCrimeAsync(context,progressDialog);
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,(String) o);
         //progressDialog.dismiss();
@@ -43,6 +44,7 @@ public class getLocationAddressAsync extends AsyncTask {
     @Override
     protected Object doInBackground(Object[] objects) {
         krime =getCrimeDetails.getLocationAddress(context,(LatLng) objects[0]);
+
         return krime;
     }
 }

@@ -1,5 +1,6 @@
 package project226.a000webhostapp.com.feelsecure;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -94,10 +95,12 @@ public class GetCrimeDetails {
 
     public String getLocationAddress(Context context ,LatLng location){
         Log.d("getLocationAddress","location:"+location.toString());
-        Geocoder geoCoder = new Geocoder(context, Locale.getDefault());
+        Geocoder geoCoder = new Geocoder(context);
         String fnialAddress =null;
         try {
+            Log.d("getLocationAddress","klkkkhjhkjkj");
             List<Address> address = geoCoder.getFromLocation(location.latitude, location.longitude, 1);
+            Thread.sleep(1000);
             Log.d("getLocationAddress","address:"+address.get(0).getSubAdminArea());
 
             fnialAddress = address.get(0).getSubAdminArea(); //This is the complete address.
@@ -105,6 +108,13 @@ public class GetCrimeDetails {
 
         } catch (Exception e) {
             // Handle IOException
+            Log.d("getLocationAddress",e.toString());
+            AlertDialog.Builder builder =new AlertDialog.Builder(context);
+            builder.setMessage("Service not Available,Please Restart your Phone");
+            builder.setNegativeButton("Ok",null);
+            builder.create();
+            builder.show();
+
         }
         return fnialAddress;
     }

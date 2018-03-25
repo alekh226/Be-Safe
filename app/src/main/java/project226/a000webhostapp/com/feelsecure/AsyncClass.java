@@ -48,13 +48,13 @@ public class AsyncClass extends AsyncTask{
                             if(task.isSuccessful()){
 
                                 Location currentLocation = (Location) task.getResult();
-                                Log.d(TAG, "onComplete: found location!"+currentLocation.getLatitude()+currentLocation.getLongitude());
+                                //Log.d(TAG, "onComplete: found location!"+currentLocation.getLatitude()+currentLocation.getLongitude());
                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                                 DatabaseReference myRef = database.getReference().child(key);
                                 myRef.child("Latitude").setValue(currentLocation.getLatitude());
                                 myRef.child("Longitude").setValue(currentLocation.getLongitude());
                                 //moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                   //     DEFAULT_ZOOM);
+                                //     DEFAULT_ZOOM);
 
                             }else{
                                 Log.d(TAG, "onComplete: current location is null");

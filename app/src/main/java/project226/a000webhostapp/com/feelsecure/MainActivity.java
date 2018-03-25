@@ -2,6 +2,7 @@ package project226.a000webhostapp.com.feelsecure;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -16,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -29,6 +31,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -68,7 +72,7 @@ public class MainActivity extends AppCompatActivity
     private Marker marker;
 
     private GoogleMap mMap;
-
+    int PROXIMITY_RADIUS = 10000;
     private static  final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private  static  final  String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -80,34 +84,80 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<String > crimeCount = new ArrayList<String>();
     private Location LocationForall;
     public  int counter=55;
-    public static String username = "Alekh";
-    public static String key ="XYZ";
+    public static String username = "";
+    public static String key ="";
     private static  String addKey;
     private MyAdapter myAdapter;
+    private TextView EmessageCount;
+    private ImageView messageIcon;
+    private TextView usernameForNav;
+    private TextView emailForNav;
 
+    private GetDriverDetails getDriverDetails;
+    private GetNearbyPlacesData getNearbyPlacesDataH;
+    private GetNearbyPlacesData getNearbyPlacesDataP;
+
+    private Model model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        UserList userList =new UserList();
+        NotificationCompat.Builder builder=new NotificationCompat.Builder(MainActivity.this);
+        builder
+                .setContentTitle("EMERGENCY")
+                .setContentText("You have "+1+" Emergency message")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         initMap();
         getDeviceLocation();
+        Bundle getargs = getIntent().getExtras();
+        username=getargs.getString("user_name");
+        key =getargs.getString("KEY");
         getLocationPermission();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        EmessageCount =(TextView)findViewById(R.id.EmessageCount);
+        model =new Model();
+        messageIcon=(ImageView)findViewById(R.id.messageIcon);
+        AsyncTask task1 = new ReadMessage(MainActivity.this,EmessageCount,model);
+        task1.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        messageIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Chat chat= Chat.newInstance(model.getTextMessage(),
+                                            model.getKeys(),
+                                            model.getUser_name(),currentLocation.getLatitude(),currentLocation.getLongitude());
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                //fragmentManager.popBackStackImmediate();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.add(R.id.map,chat);
+                fragmentTransaction.commit();
+                EmessageCount.setText("0");
+                messageIcon.setVisibility(View.INVISIBLE);
+                EmessageCount.setVisibility(View.INVISIBLE);
+            }
+        });
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
-
-                /*DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-//To Open:
-                drawerLayout.openDrawer(Gravity.START);*/
+                AlertDialog.Builder builder =new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage("Are You Sure")
+                        .setNegativeButton("No",null)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                SendEmergencyEmail();
+                                SendMessage sendMessage =new SendMessage(MainActivity.this);
+                            }
+                        })
+                        .create()
+                        .show();
             }
         });
 
@@ -119,7 +169,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        View header=navigationView.getHeaderView(0);
         //setContentView(R.layout.content_main);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         //MyDBHandler myDBHandler = new MyDBHandler(MainActivity.this,null,null,1);
@@ -127,39 +177,33 @@ public class MainActivity extends AppCompatActivity
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference();
-
-
-
-
         //configure initial path
         myRef.child(key);
         myRef = database.getReference().child(key);
         myRef.child("userName").setValue(username);
         myRef.child("accessList");
-        //Read from firebase
-       /* myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                //String value = dataSnapshot.getValue().toString();
-                Object latitude =  dataSnapshot.getValue();
-                Log.d("firebaseStatus", "Value is: " + latitude);
-            }
+        usernameForNav =(TextView)header.findViewById(R.id.user_name_for_navH);
+        emailForNav =(TextView)header.findViewById(R.id.email_for_navH);
+        MyDBHandler dbHandler =new MyDBHandler(MainActivity.this,null,null,1);
+        usernameForNav.setText(dbHandler.getUserName());
+        emailForNav.setText(dbHandler.getUserEmail());
+        //updateNav();
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });*/
+    }
 
-
+    public void updateNav(){
+        usernameForNav =(TextView)findViewById(R.id.user_name_for_navH);
+        emailForNav =(TextView)findViewById(R.id.email_for_navH);
+        MyDBHandler dbHandler =new MyDBHandler(MainActivity.this,null,null,1);
+        usernameForNav.setText("hkhk");
+        emailForNav.setText(dbHandler.getUserEmail());
     }
 
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        messageIcon.setVisibility(View.VISIBLE);
+        EmessageCount.setVisibility(View.VISIBLE);
         /*int backStackEntry = getSupportFragmentManager().getBackStackEntryCount();
         if (backStackEntry > 0) {
             for (int i = 0; i < backStackEntry-2; i++) {
@@ -199,11 +243,62 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+        if (id == R.id.action_logout) {
+            logout();
+            return true;
+        }
         if (id == R.id.action_settings) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    private void SendEmergencyEmail(){
+       LatLng nearestPS=getNearbyPlacesDataH.nearestHospital;
+       LatLng nearestHospital=getNearbyPlacesDataP.getNearestPS();
+       String email=getDriverDetails.email;
+       String phone = getDriverDetails.phone;
+        Log.d("Emergency","Hos:"+getNearbyPlacesDataH.nearestHospital.toString()+
+                                "PS:"+getNearbyPlacesDataP.getNearestPS().toString()+
+                                    "AmbE:"+getDriverDetails.email+
+                                    "AmbP:"+getDriverDetails.phone);
+        Response.Listener<String> responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonResponse = new JSONObject(response);
+                    boolean success = jsonResponse.getBoolean("success");
+                    if (success) {
+                        Toast.makeText(MainActivity.this,"Emergency Message Sent Successfully",Toast.LENGTH_LONG).show();
+                    } else {
+                        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
+                        builder.setMessage("Error Occured")
+                                .setNegativeButton("Retry", null)
+                                .create()
+                                .show();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        sendEmailRequest getContactDetailsRequest1 =new sendEmailRequest(email,
+                                                        ""+nearestPS.latitude,""+nearestPS.longitude,
+                                                                ""+nearestHospital.latitude,""+nearestHospital.longitude,
+                                                                ""+currentLocation.getLatitude(),""+currentLocation.getLongitude(),
+                                                                responseListener);
+        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+        queue.add(getContactDetailsRequest1);
+    }
+
+    private void logout() {
+
+        MyDBHandler myDBHandler =new MyDBHandler(MainActivity.this,null,null,1);
+        myDBHandler.logout();
+        Intent intent =new Intent(MainActivity.this,LoginActivity.class);
+        startActivity(intent);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -213,27 +308,24 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.PoliceStations) {
-            /*setContentView(R.layout.activity_maps);
-            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
-            B
-            // Handle the camera action*/
+
+            showPlaces("police",true);
+            Toast.makeText(MainActivity.this, "Showing Nearby PoliceStaions", Toast.LENGTH_SHORT).show();
+
 
         } else if (id == R.id.Medicals) {
-            if (otherKey.equals("K")){
-                Bundle getargs = getIntent().getExtras();
-                //username = getargs.getString("username");
-                Log.d("TTTTTT","k");
-                otherKey =getargs.getString("otherKey");}
-            Toast.makeText(MainActivity.this,"gallery",Toast.LENGTH_SHORT).show();
+            showPlaces("hospital",true);
+            Toast.makeText(MainActivity.this, "Showing Nearby Hospitals", Toast.LENGTH_SHORT).show();
+
 
         } else if (id == R.id.Ambulance) {
-
+            GetDriverDetails getDriverDetails =new GetDriverDetails(MainActivity.this,mMap,
+                        new LatLng(LocationForall.getLatitude(),LocationForall.getLongitude()));
+            getDriverDetails.getDetails(true);
 
         } else if (id == R.id.Location) {
-
+            messageIcon.setVisibility(View.INVISIBLE);
+            EmessageCount.setVisibility(View.INVISIBLE);
             SelectUser selectUser =new SelectUser();
 
             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -248,45 +340,7 @@ public class MainActivity extends AppCompatActivity
             LatLng latLng = new LatLng(LocationForall.getLatitude(),LocationForall.getLongitude());
             AsyncTask task =new getLocationAddressAsync(MainActivity.this);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,latLng);
-            /*new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    LatLng latLng = new LatLng(LocationForall.getLatitude(),LocationForall.getLongitude());
-                    final GetCrimeDetails getCrimeDetails =new GetCrimeDetails();
-                    String krime =getCrimeDetails.getLocationAddress(MainActivity.this,latLng);//getLocationAddress(latLng);
-                    try {
-                        Thread.sleep(6000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    if(krime.equals("Ernakulam"))
-                        krime ="Ernakulam Rural";
-                    // searchCrime(krime);
-                    getCrimeDetails.searchCrime(MainActivity.this,krime);
 
-                    try {
-                        Thread.sleep(6000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    CrimeFragment crimeFragment =CrimeFragment.newInstance(getCrimeDetails.crimeLabel,getCrimeDetails.crimeCount);
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    //fragmentManager.popBackStackImmediate();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.addToBackStack("Second");
-                    fragmentTransaction.add(R.id.map,crimeFragment);
-                    fragmentTransaction.commit();
-
-                }
-            }).start();*/
-            /*CrimeFragment crimeFragment= new CrimeFragment();
-            Bundle bd =new Bundle();
-            bd.putString("record",krime);
-            crimeFragment.setArguments(bd);
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.map,crimeFragment).commit();*/
         } else if (id
                 == R.id.nav_share) {
 
@@ -298,13 +352,31 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    public void showPlaces(String place,boolean flag){
+        Object dataTransfer[] = new Object[2];
+        LatLng latLng =new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
+        if (place.equals("police"))
+            getNearbyPlacesDataP = new GetNearbyPlacesData(MainActivity.this,latLng,place,flag);
+        else
+            getNearbyPlacesDataH = new GetNearbyPlacesData(MainActivity.this,latLng,place,flag);
+        mMap.clear();
+        String police = place;
+        String url = getUrl(currentLocation.getLatitude(), currentLocation.getLongitude(), police);
+        dataTransfer[0] = mMap;
+        dataTransfer[1] = url;
+        Log.d("SearchURL",url);
+        if (place.equals("police"))
+            getNearbyPlacesDataP.execute(dataTransfer);
+        else
+            getNearbyPlacesDataH.execute(dataTransfer);
+    }
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
-        // Add a marker in Sydney and move the camera
+        //Add a marker in Sydney and move the camera
 
         getDeviceLocation();
       //  getOtherUserLocation(otherKey);
@@ -395,6 +467,11 @@ public class MainActivity extends AppCompatActivity
                             LocationForall=currentLocation;
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM);
+                            showPlaces("police",false);
+                            showPlaces("hospital",false);
+                            getDriverDetails =new GetDriverDetails(MainActivity.this,mMap,
+                                    new LatLng(LocationForall.getLatitude(),LocationForall.getLongitude()));
+                            getDriverDetails.getDetails(false);
 
                         } else {
                             Log.d(TAG, "onComplete: current location is null");
@@ -429,7 +506,7 @@ public class MainActivity extends AppCompatActivity
 
 
     public void addNewUserClicked(View view){
-        AddUser newUser =AddUser.newInstance(key,"prams2");
+        AddUser newUser =AddUser.newInstance(key,currentLocation.getLatitude(),currentLocation.getLongitude());
         SelectUser selectUser =new SelectUser();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStackImmediate();
@@ -453,7 +530,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void shareKeyClicked(View view){
-        String whatsAppMessage = "This Is my Key :XYZ";
+        String whatsAppMessage = "Hi, To access my Live location use my KEY:'"+key+"' on FeelSecure App.";
 
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
@@ -469,5 +546,22 @@ public class MainActivity extends AppCompatActivity
             startActivity(chooser);
         }
     }
+
+    private String getUrl(double latitude , double longitude , String nearbyPlace)
+    {
+
+        StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlaceUrl.append("location="+latitude+","+longitude);
+        googlePlaceUrl.append("&radius="+PROXIMITY_RADIUS);
+        googlePlaceUrl.append("&type="+nearbyPlace);
+        googlePlaceUrl.append("&sensor=true");
+        googlePlaceUrl.append("&key="+"AIzaSyBRo21da3onF_axh_jX8UXDaOwtmm2BEK4");
+
+        Log.d("MapsActivity", "url = "+googlePlaceUrl.toString());
+
+        return googlePlaceUrl.toString();
+    }
+
+
 
 }

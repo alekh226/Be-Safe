@@ -1,4 +1,8 @@
 package project226.a000webhostapp.com.feelsecure;
+
+/**
+ * Created by WINDOWS on 3/24/2018.
+ */
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +28,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     private List<String> values;
     private List<String> keys;
+    private List<String> users;
     private Context context;
     private GoogleMap mMap;
     private LatLng otherslocation;
@@ -46,9 +51,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public ViewHolder(View v) {
             super(v);
             layout = v;
-            txtHeader = (TextView) v.findViewById(R.id.firstLine);
-            txtFooter = (TextView) v.findViewById(R.id.secondLine);
-            removeButton=(ImageView)v.findViewById(R.id.deleteButton);
+            txtHeader = (TextView) v.findViewById(R.id.user_name_for_text);
+            txtFooter = (TextView) v.findViewById(R.id.messageText);
+            //removeButton=(ImageView)v.findViewById(R.id.deleteButton);
         }
     }
 
@@ -63,66 +68,63 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(Context context1,List<String> myDataset,List<String> keySet,GoogleMap Map,LatLng latLng) {
+    public ChatAdapter(Context context1,List<String> myDataset,List<String> keySet,List<String> user,LatLng latLng) {
         keys =keySet;
         context =context1;
         values = myDataset;
-        mMap=Map;
+        users=user;
         currentLocation =latLng;
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+    public ChatAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
         // create a new view
         LayoutInflater inflater = LayoutInflater.from(
                 parent.getContext());
         View v =
-                inflater.inflate(R.layout.fragment_user_list, parent, false);
+                inflater.inflate(R.layout.chat_list, parent, false);
         // set the view's size, margins, paddings and layout parameters
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(ChatAdapter.ViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        final String name = values.get(position);
+        final String name = users.get(position);
         holder.txtHeader.setText(name);
         holder.txtHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //remove(position);
-               // Toast.makeText(context,keys.get(position),Toast.LENGTH_SHORT);
-               Intent intent = new Intent(context,MapsActivity2.class);
+                Intent intent = new Intent(context,MapsActivity2.class);
                 Bundle bundle =new Bundle();
                 bundle.putString("otherKey",keys.get(position));
                 bundle.putDouble("currentLat",currentLocation.latitude);
                 bundle.putDouble("currentLong",currentLocation.longitude);
-                bundle.putDouble("otherLat",1.56999);
-                bundle.putDouble("otherLong",15.55699);
-                bundle.putString("place","nothing");
+                // bundle.putDouble("otherLat",otherslocation.latitude);
+                //bundle.putDouble("otherLong",otherslocation.longitude);
                 intent.putExtras(bundle);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
-               // getOtherUserLocation(keys.get(position));
+                // getOtherUserLocation(keys.get(position));
                 Log.d("MyAdapter",keys.toString());
             }
         });
-        holder.removeButton.setOnClickListener(new OnClickListener() {
+        /*holder.removeButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 MyDBHandler myDBHandler = new MyDBHandler(context,null,null,1);
                 myDBHandler.removeUser(keys.get(position));
                 remove(position);
             }
-        });
-        holder.txtFooter.setText("Key: " +keys.get(position));
+        });*/
+        holder.txtFooter.setText("Key: " +values.get(position));
     }
+
+    // Replace the contents of a view (invoked by the layout manager)
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override

@@ -33,7 +33,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query ="CREATE TABLE " + TABLE_MEMBERS +"( user_id INT PRIMARY KEY , " +
-                " user_name VARCHAR(30), email VARCHAR(50), flag INT(2) DEFAULT 0);";
+                " user_name VARCHAR(30), email VARCHAR(50),key VARCHAR(5), flag INT(2) DEFAULT 0);";
         db.execSQL(query);
         String query1 = "CREATE TABLE " + TABLE_ATTENDANCE + "(" +
                 USER_ID + " INT NOT NULL ," +
@@ -55,7 +55,13 @@ public class MyDBHandler extends SQLiteOpenHelper{
         onCreate(db);
     }
 
+    public  void removeUser(String key){
+        SQLiteDatabase db = getWritableDatabase();
+        String query ="DELETE FROM user_list WHERE key = '"+key+ "';";
+        db.execSQL(query);
+        db.close();
 
+    }
     public void  insertUsers(String key,String user_name){
         Log.d("inside database",key+user_name);
         SQLiteDatabase db = getWritableDatabase();
@@ -100,10 +106,10 @@ public class MyDBHandler extends SQLiteOpenHelper{
     }
 
     //Add a new row to the database
-    public void addMember(Model model){
+    public void addMember(int userId,String userName,String email,String key){
         SQLiteDatabase db = getWritableDatabase();
-        String query3="INSERT INTO "+TABLE_MEMBERS+" VALUES( "+model.getUserID()+" , "+"'"+model.getUserName()+"'"+" , "
-                +"'"+model.getEmail()+"'"+" , 1 );";
+        String query3="INSERT INTO "+TABLE_MEMBERS+" VALUES( "+userId+" , "+"'"+userName+"'"+" , "
+                +"'"+email+"' , '"+key+"' , 1 );";
         db.execSQL(query3);
         db.close();
     }
@@ -149,6 +155,42 @@ public class MyDBHandler extends SQLiteOpenHelper{
             user_name=null;
         db.close();
         return user_name;
+    }
+    public String getUserEmail(){
+        String user_name;
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_MEMBERS + " WHERE 1";
+        Cursor recordSet = db.rawQuery(query, null);
+        recordSet.moveToFirst();
+        if(recordSet.getCount()!=0){
+            recordSet.moveToLast();
+            user_name=recordSet.getString(recordSet.getColumnIndex("email"));}
+        else
+            user_name=null;
+        db.close();
+        return user_name;
+    }
+    public String getUserKey(){
+        String key;
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_MEMBERS + " WHERE 1";
+        Cursor recordSet = db.rawQuery(query, null);
+        recordSet.moveToFirst();
+        if(recordSet.getCount()!=0){
+            recordSet.moveToLast();
+            key=recordSet.getString(recordSet.getColumnIndex("key"));}
+        else
+            key=null;
+        db.close();
+        return key;
+    }
+    public void logout(){
+        SQLiteDatabase db =getWritableDatabase();
+        String query ="DELETE FROM "+ TABLE_MEMBERS + " WHERE 1";
+        db.execSQL(query);
+        String query1 ="DELETE FROM user_list WHERE 1";
+        db.execSQL(query1);
+        db.close();
     }
     public  void insertDistrict(int i ,String name){
         SQLiteDatabase db = getWritableDatabase();

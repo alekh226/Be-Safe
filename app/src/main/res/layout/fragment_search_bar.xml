@@ -4,7 +4,7 @@
     android:layout_width="382dp"
     android:id="@+id/search_bar"
     android:layout_height="55dp"
-    android:background="@drawable/buttonshape_selectuser"
+    android:background="#E1DAE6"
     tools:context="project226.a000webhostapp.com.feelsecure.SearchBar">
 
     <!-- TODO: Update blank fragment layout -->
@@ -28,6 +28,7 @@
         android:layout_width="75dp"
         android:layout_height="55dp"
         android:layout_marginLeft="290dp"
+        android:background="@drawable/buttonshape"
         android:layout_marginRight="10dp"
         android:onClick="searchButtonClickedForCrime"
         android:text="Search"

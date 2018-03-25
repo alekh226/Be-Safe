@@ -38,6 +38,8 @@
 
             <Button
                 android:text="LOGIN"
+                android:background="#40414A"
+                android:textColor="@color/white"
                 android:layout_width="124dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/logInb"

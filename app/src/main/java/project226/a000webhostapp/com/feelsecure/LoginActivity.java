@@ -21,9 +21,13 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Random;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -88,19 +92,23 @@ public class LoginActivity extends AppCompatActivity {
                             boolean success = jsonResponse.getBoolean("success");
                             String email=jsonResponse.getString("email");
                             int user_id=jsonResponse.getInt("user_id");
-
+                            String key="";
 
                             if (success) {
-                                Intent ie=new Intent(LoginActivity.this,MainActivity.class);
-                                LoginActivity.this.startActivity(ie);
-                                Model model1=new Model();
 
+                                key = randomString();
                                 MyDBHandler dbhandler =new MyDBHandler(LoginActivity.this,null,null,1);
-                                model1.setFlag(1);
-                                model1.setEmail(email);
-                                model1.setUserID(user_id);
-                                model1.setUserName(user_name);
-                                // dbhandler.addMember(model1);
+
+                                dbhandler.addMember(user_id,user_name,email,key);
+                                FirebaseDatabase database =FirebaseDatabase.getInstance();
+                                DatabaseReference ref =database.getReference(key);
+                                ref.child("userName").setValue(user_name);
+                                Intent ie=new Intent(LoginActivity.this,MainActivity.class);
+                                Bundle bundle= new Bundle();
+                                bundle.putString("user_name",user_name);
+                                bundle.putString("KEY",key);
+                                ie.putExtras(bundle);
+                                LoginActivity.this.startActivity(ie);
                                /* AlertDialog.Builder builder = new AlertDialog.Builder(Loading_Page.this);
                                 builder.setMessage("Login successful")
                                         .setNegativeButton("Retry", null)
@@ -143,6 +151,19 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
             }
             return  false;
+    }
+
+    public String randomString(){
+        char[] chars1 = "ABCDEF012GHIJKL345MNOPQR678STUVWXYZ9".toCharArray();
+        StringBuilder sb1 = new StringBuilder();
+        Random random1 = new Random();
+        for (int i = 0; i < 5; i++)
+        {
+            char c1 = chars1[random1.nextInt(chars1.length)];
+            sb1.append(c1);
+        }
+        String random_string = sb1.toString();
+        return random_string;
     }
 
 

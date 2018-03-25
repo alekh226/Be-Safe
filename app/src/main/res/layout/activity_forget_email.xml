@@ -40,6 +40,8 @@
             <Button
                 android:text="SUBMIT"
                 android:layout_width="124dp"
+                android:background="#40414A"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:id="@+id/submitEmailResetF"
                 android:layout_gravity="center_horizontal" />

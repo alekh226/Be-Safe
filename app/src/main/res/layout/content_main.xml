@@ -25,6 +25,33 @@
     android:layout_height="match_parent"
     tools:context="project226.a000webhostapp.com.feelsecure.MapsActivity" />
 
+    <ImageView
+        android:id="@+id/messageIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/map"
+        android:background="@drawable/messge_icon_design"
+        android:padding="8dp"
+        android:layout_marginTop="51dp"
+        android:layout_marginRight="8dp"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
+
+    <TextView
+        android:id="@+id/EmessageCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/messageIcon"
+        android:layout_alignLeft="@+id/messageIcon"
+        android:paddingLeft="17dp"
+        android:paddingBottom="5dp"
+        android:layout_alignStart="@+id/messageIcon"
+        android:gravity="top|bottom|left|right|center_vertical|center_horizontal"
+        android:text="0"
+        android:textColor="#FF305A"
+        android:textSize="18dp" />
+
 
 </RelativeLayout>
 

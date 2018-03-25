@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:listitem="@layout/chat_list"
+    tools:context="project226.a000webhostapp.com.feelsecure.Chat"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/chat_box"
+    android:layout_marginTop="0dp"
+    android:padding="5dp"
+    android:backgroundTint="#DACCFF"
+    android:layout_marginLeft="1dp"
+    android:layout_marginRight="1dp"
+    android:background="@color/white"
+    app:layoutManager="LinearLayoutManager"
+    />
+

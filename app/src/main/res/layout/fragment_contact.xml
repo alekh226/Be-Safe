@@ -1,0 +1,56 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="75dp"
+    android:layout_marginRight="75dp"
+    android:layout_marginTop="150dp"
+    android:layout_marginBottom="100dp"
+    android:id="@+id/contact"
+    android:background="@drawable/fregment_design"
+    tools:context="project226.a000webhostapp.com.feelsecure.Contact">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <Button
+        android:id="@+id/callButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="110dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/buttonshape"
+        android:onClick="callButtonClicked"
+        android:text="Call" />
+
+    <Button
+        android:id="@+id/emailButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttonshape"
+        android:layout_marginTop="110dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="130dp"
+        android:onClick="EmailButtonClicked"
+        android:text="email" />
+    <Button
+        android:id="@+id/getDirButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttonshape"
+        android:layout_marginTop="165dp"
+        android:layout_marginBottom="10dp"
+        android:padding="10dp"
+        android:layout_marginLeft="60dp"
+        android:onClick="getDirButtonClicked"
+        android:text="get Direction" />
+    <TextView
+        android:id="@+id/title_contact"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:padding="15dp"
+        android:text="Title"
+        android:textAppearance="@style/TextAppearance.AppCompat" />
+
+</FrameLayout>
